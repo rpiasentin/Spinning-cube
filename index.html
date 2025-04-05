@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>3D Spinning Cube - Custom Text</title>
+  <title>Custom 3D Spinning Cube</title>
   <style>
     :root {
       --cube-size: 40vw;
@@ -22,30 +22,46 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: center;
-      height: 100vh;
-      overflow: hidden;
-      perspective: 1000px;
+      padding: 5vh 5vw;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .controls {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 40px;
+      gap: 10px;
+      text-align: center;
     }
 
     input {
-      margin-bottom: 20px;
       padding: 10px 20px;
-      font-size: 1rem;
+      font-size: 1.1rem;
       border-radius: 8px;
       border: none;
       outline: none;
+      width: 80%;
+      max-width: 400px;
     }
 
     button {
-      margin-bottom: 30px;
       padding: 10px 20px;
-      font-size: 1rem;
+      font-size: 1.1rem;
       background: #0ff;
       color: #111;
       border: none;
       border-radius: 8px;
       cursor: pointer;
+    }
+
+    .scene-wrapper {
+      flex-grow: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
     }
 
     .scene {
@@ -65,13 +81,15 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      padding: 10px;
+      text-align: center;
     }
 
     .face span {
       font-weight: bold;
       font-size: var(--font-size);
-      text-align: center;
       animation: blink 1s infinite;
+      word-break: break-word;
     }
 
     .front  { transform: rotateY(  0deg) translateZ(calc(var(--cube-size) / 2)); }
@@ -98,35 +116,39 @@
       }
 
       input, button {
-        width: 80%;
-        font-size: 1.1rem;
+        font-size: 1rem;
       }
     }
   </style>
 </head>
 <body>
 
-  <input type="text" id="cubeTextInput" placeholder="Type your message here..." />
-  <button onclick="updateCubeText()">Set Text</button>
+  <div class="controls">
+    <h1>🌀 Spinning Cube</h1>
+    <p>Type your message and watch it spin:</p>
+    <input type="text" id="cubeTextInput" placeholder="Enter your vibe..." />
+    <button onclick="updateCubeText()">Set Text</button>
+  </div>
 
-  <div class="scene" id="cube">
-    <div class="face front"><span>RICHARD IS VIBING</span></div>
-    <div class="face back"><span>RICHARD IS VIBING</span></div>
-    <div class="face right"><span>RICHARD IS VIBING</span></div>
-    <div class="face left"><span>RICHARD IS VIBING</span></div>
-    <div class="face top"><span>RICHARD IS VIBING</span></div>
-    <div class="face bottom"><span>RICHARD IS VIBING</span></div>
+  <div class="scene-wrapper">
+    <div class="scene" id="cube">
+      <div class="face front"><span>RICHARD IS VIBING</span></div>
+      <div class="face back"><span>RICHARD IS VIBING</span></div>
+      <div class="face right"><span>RICHARD IS VIBING</span></div>
+      <div class="face left"><span>RICHARD IS VIBING</span></div>
+      <div class="face top"><span>RICHARD IS VIBING</span></div>
+      <div class="face bottom"><span>RICHARD IS VIBING</span></div>
+    </div>
   </div>
 
   <script>
     function updateCubeText() {
-      const text = document.getElementById("cubeTextInput").value || "RICHARD IS VIBING";
+      const text = document.getElementById("cubeTextInput").value.trim() || "RICHARD IS VIBING";
       document.querySelectorAll(".face span").forEach(span => {
         span.textContent = text;
       });
     }
 
-    // Enable Enter key as a trigger
     document.getElementById("cubeTextInput").addEventListener("keypress", function (e) {
       if (e.key === "Enter") updateCubeText();
     });
