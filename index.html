@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>3D Spinning Cube</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>3D Spinning Cube - Custom Text</title>
   <style>
     :root {
       --cube-size: 40vw;
@@ -12,27 +12,48 @@
 
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
     }
 
     body {
-      perspective: 1000px;
-      background: #111;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      margin: 0;
       font-family: sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
       overflow: hidden;
+      perspective: 1000px;
+    }
+
+    input {
+      margin-bottom: 20px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      outline: none;
+    }
+
+    button {
+      margin-bottom: 30px;
+      padding: 10px 20px;
+      font-size: 1rem;
+      background: #0ff;
+      color: #111;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
     }
 
     .scene {
       width: var(--cube-size);
       height: var(--cube-size);
-      position: relative;
       transform-style: preserve-3d;
       animation: spin 6s linear infinite;
+      position: relative;
     }
 
     .face {
@@ -50,7 +71,6 @@
       font-weight: bold;
       font-size: var(--font-size);
       text-align: center;
-      color: #fff;
       animation: blink 1s infinite;
     }
 
@@ -62,26 +82,34 @@
     .bottom { transform: rotateX(-90deg) translateZ(calc(var(--cube-size) / 2)); }
 
     @keyframes spin {
-      0%   { transform: rotateX(0deg) rotateY(0deg); }
-      100% { transform: rotateX(360deg) rotateY(360deg); }
+      from { transform: rotateX(0deg) rotateY(0deg); }
+      to   { transform: rotateX(360deg) rotateY(360deg); }
     }
 
     @keyframes blink {
       0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
+      50%      { opacity: 0; }
     }
 
-    /* Mobile-specific adjustments */
     @media (max-width: 480px) {
       :root {
         --cube-size: 70vw;
         --font-size: 5vw;
       }
+
+      input, button {
+        width: 80%;
+        font-size: 1.1rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="scene">
+
+  <input type="text" id="cubeTextInput" placeholder="Type your message here..." />
+  <button onclick="updateCubeText()">Set Text</button>
+
+  <div class="scene" id="cube">
     <div class="face front"><span>RICHARD IS VIBING</span></div>
     <div class="face back"><span>RICHARD IS VIBING</span></div>
     <div class="face right"><span>RICHARD IS VIBING</span></div>
@@ -89,5 +117,20 @@
     <div class="face top"><span>RICHARD IS VIBING</span></div>
     <div class="face bottom"><span>RICHARD IS VIBING</span></div>
   </div>
+
+  <script>
+    function updateCubeText() {
+      const text = document.getElementById("cubeTextInput").value || "RICHARD IS VIBING";
+      document.querySelectorAll(".face span").forEach(span => {
+        span.textContent = text;
+      });
+    }
+
+    // Enable Enter key as a trigger
+    document.getElementById("cubeTextInput").addEventListener("keypress", function (e) {
+      if (e.key === "Enter") updateCubeText();
+    });
+  </script>
+
 </body>
 </html>
