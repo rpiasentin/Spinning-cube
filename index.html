@@ -1,17 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Custom 3D Spinning Cube</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>True 3D Face Detection Cube</title>
   <style>
     :root {
       --cube-size: 40vw;
       --font-size: 4vw;
-    }
-
-    * {
-      box-sizing: border-box;
     }
 
     body {
@@ -24,35 +20,31 @@
       align-items: center;
       padding: 5vh 5vw;
       min-height: 100vh;
-      overflow-x: hidden;
+      overflow: hidden;
     }
 
     .controls {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-bottom: 40px;
-      gap: 10px;
+      margin-bottom: 30px;
       text-align: center;
     }
 
     input {
-      padding: 10px 20px;
-      font-size: 1.1rem;
-      border-radius: 8px;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 5px;
       border: none;
-      outline: none;
       width: 80%;
       max-width: 400px;
+      margin-right: 10px;
     }
 
     button {
-      padding: 10px 20px;
-      font-size: 1.1rem;
-      background: #0ff;
-      color: #111;
+      padding: 10px 15px;
+      font-size: 1rem;
       border: none;
-      border-radius: 8px;
+      background: #0ff;
+      color: #000;
+      border-radius: 5px;
       cursor: pointer;
     }
 
@@ -68,8 +60,8 @@
       width: var(--cube-size);
       height: var(--cube-size);
       transform-style: preserve-3d;
-      animation: spin 6s linear infinite;
       position: relative;
+      transition: transform 0.05s linear;
     }
 
     .face {
@@ -83,13 +75,18 @@
       align-items: center;
       padding: 10px;
       text-align: center;
+      transition: background 0.2s ease;
     }
 
     .face span {
-      font-weight: bold;
       font-size: var(--font-size);
+      font-weight: bold;
       animation: blink 1s infinite;
-      word-break: break-word;
+    }
+
+    .active-face {
+      background: rgba(200, 200, 200, 0.9) !important;
+      color: #000;
     }
 
     .front  { transform: rotateY(  0deg) translateZ(calc(var(--cube-size) / 2)); }
@@ -98,11 +95,6 @@
     .left   { transform: rotateY(-90deg) translateZ(calc(var(--cube-size) / 2)); }
     .top    { transform: rotateX( 90deg) translateZ(calc(var(--cube-size) / 2)); }
     .bottom { transform: rotateX(-90deg) translateZ(calc(var(--cube-size) / 2)); }
-
-    @keyframes spin {
-      from { transform: rotateX(0deg) rotateY(0deg); }
-      to   { transform: rotateX(360deg) rotateY(360deg); }
-    }
 
     @keyframes blink {
       0%, 100% { opacity: 1; }
@@ -114,18 +106,13 @@
         --cube-size: 70vw;
         --font-size: 5vw;
       }
-
-      input, button {
-        font-size: 1rem;
-      }
     }
   </style>
 </head>
 <body>
 
   <div class="controls">
-    <h1>🌀 Spinning Cube</h1>
-    <p>Type your message and watch it spin:</p>
+    <h1>Smart Spinning Cube</h1>
     <input type="text" id="cubeTextInput" placeholder="Enter your vibe..." />
     <button onclick="updateCubeText()">Set Text</button>
   </div>
@@ -142,6 +129,22 @@
   </div>
 
   <script>
+    const cube = document.getElementById("cube");
+    const faces = document.querySelectorAll(".face");
+
+    let rotateX = 0;
+    let rotateY = 0;
+    let isPaused = false;
+
+    const faceNormals = {
+      front:  [ 0,  0,  1],
+      back:   [ 0,  0, -1],
+      right:  [ 1,  0,  0],
+      left:   [-1,  0,  0],
+      top:    [ 0,  1,  0],
+      bottom: [ 0, -1,  0],
+    };
+
     function updateCubeText() {
       const text = document.getElementById("cubeTextInput").value.trim() || "RICHARD IS VIBING";
       document.querySelectorAll(".face span").forEach(span => {
@@ -149,9 +152,60 @@
       });
     }
 
-    document.getElementById("cubeTextInput").addEventListener("keypress", function (e) {
+    function degToRad(deg) {
+      return deg * Math.PI / 180;
+    }
+
+    function rotateVector(v, rx, ry) {
+      // Apply rotation around X
+      let [x1, y1, z1] = v;
+      let cosX = Math.cos(rx), sinX = Math.sin(rx);
+      let y2 = y1 * cosX - z1 * sinX;
+      let z2 = y1 * sinX + z1 * cosX;
+
+      // Apply rotation around Y
+      let cosY = Math.cos(ry), sinY = Math.sin(ry);
+      let x3 = x1 * cosY + z2 * sinY;
+      let z3 = -x1 * sinY + z2 * cosY;
+
+      return [x3, y2, z3];
+    }
+
+    function highlightMostFacingFace() {
+      let maxZ = -Infinity;
+      let active = null;
+      for (let face in faceNormals) {
+        const normal = faceNormals[face];
+        const rotated = rotateVector(normal, degToRad(rotateX), degToRad(rotateY));
+        if (rotated[2] > maxZ) {
+          maxZ = rotated[2];
+          active = face;
+        }
+      }
+      faces.forEach(f => f.classList.remove("active-face"));
+      document.querySelector(`.face.${active}`).classList.add("active-face");
+    }
+
+    function animate() {
+      if (!isPaused) {
+        rotateX += 0.4;
+        rotateY += 0.6;
+        cube.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+        highlightMostFacingFace();
+      }
+      requestAnimationFrame(animate);
+    }
+
+    cube.addEventListener("mouseenter", () => isPaused = true);
+    cube.addEventListener("mouseleave", () => isPaused = false);
+    cube.addEventListener("touchstart", () => isPaused = true);
+    cube.addEventListener("touchend", () => isPaused = false);
+
+    document.getElementById("cubeTextInput").addEventListener("keypress", e => {
       if (e.key === "Enter") updateCubeText();
     });
+
+    animate();
   </script>
 
 </body>
