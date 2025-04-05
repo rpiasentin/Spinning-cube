@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>3D Spinning Cube</title>
+  <style>
+    :root {
+      --cube-size: 40vw;
+      --font-size: 4vw;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      perspective: 1000px;
+      background: #111;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: sans-serif;
+      overflow: hidden;
+    }
+
+    .scene {
+      width: var(--cube-size);
+      height: var(--cube-size);
+      position: relative;
+      transform-style: preserve-3d;
+      animation: spin 6s linear infinite;
+    }
+
+    .face {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 128, 255, 0.4);
+      border: 1px solid #0ff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .face span {
+      font-weight: bold;
+      font-size: var(--font-size);
+      text-align: center;
+      color: #fff;
+      animation: blink 1s infinite;
+    }
+
+    .front  { transform: rotateY(  0deg) translateZ(calc(var(--cube-size) / 2)); }
+    .back   { transform: rotateY(180deg) translateZ(calc(var(--cube-size) / 2)); }
+    .right  { transform: rotateY( 90deg) translateZ(calc(var(--cube-size) / 2)); }
+    .left   { transform: rotateY(-90deg) translateZ(calc(var(--cube-size) / 2)); }
+    .top    { transform: rotateX( 90deg) translateZ(calc(var(--cube-size) / 2)); }
+    .bottom { transform: rotateX(-90deg) translateZ(calc(var(--cube-size) / 2)); }
+
+    @keyframes spin {
+      0%   { transform: rotateX(0deg) rotateY(0deg); }
+      100% { transform: rotateX(360deg) rotateY(360deg); }
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* Mobile-specific adjustments */
+    @media (max-width: 480px) {
+      :root {
+        --cube-size: 70vw;
+        --font-size: 5vw;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="scene">
+    <div class="face front"><span>RICHARD IS VIBING</span></div>
+    <div class="face back"><span>RICHARD IS VIBING</span></div>
+    <div class="face right"><span>RICHARD IS VIBING</span></div>
+    <div class="face left"><span>RICHARD IS VIBING</span></div>
+    <div class="face top"><span>RICHARD IS VIBING</span></div>
+    <div class="face bottom"><span>RICHARD IS VIBING</span></div>
+  </div>
+</body>
+</html>
